@@ -2,6 +2,8 @@
 
 a terminal city generator
 
+![asciitty](asciitty.gif)
+
 ## Usage
 
     python3 -m asciitty
