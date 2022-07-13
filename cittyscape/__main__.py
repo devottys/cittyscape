@@ -1,7 +1,7 @@
 import sys
 import curses
 
-from asciitty import StreetViewer, iter_buildings, main
+from cittyscape import StreetViewer, iter_buildings, main
 
 if __name__ == '__main__':
     argc = len(sys.argv)
