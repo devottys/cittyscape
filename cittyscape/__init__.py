@@ -6,7 +6,8 @@ import curses
 
 from wcwidth import wcswidth
 
-from .buildings import iter_buildings
+from .buildings import iter_buildings, Thing, Box, Text
+from .people import iter_people
 from .utils import Colors
 
 keycodes = { getattr(curses, k):k for k in dir(curses) if k.startswith('KEY_') }
