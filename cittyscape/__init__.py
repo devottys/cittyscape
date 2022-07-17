@@ -49,7 +49,7 @@ def main(scr, viewer):
             viewer.draw(scr)
             ch = getkey(scr)
         except Exception as e:
-            return str(e)
+            raise # return str(e)
 
         if not ch: continue
         if ch == '^Q': return
