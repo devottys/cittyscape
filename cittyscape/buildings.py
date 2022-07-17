@@ -424,11 +424,13 @@ class Building(Thing):
         box = self.box
         floorh = self.floorh
 
-
         extrah = (box.h % floorh)
         box.y1 += extrah
         y1 = box.y1+1
         box.h -= extrah
+
+        for y in range(y1, y1+box.h):
+            yield from hline('   ', box.x1, y, box.w, color=self.color)
 
         # edges of building
         yield from vline(j, box.x1, y1, box.h, color=self.color)
