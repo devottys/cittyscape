@@ -60,6 +60,12 @@ def main(scr, viewer):
             if viewer.handle_key(ch):
                 break
 
+sunset_colors = '17 18 19 20 21 57 93 129 165 201 200 199 198 197 196 202 208 214 220 226'.split()[::-1]
+
+sunset=defaultdict(lambda: '17 on 17')
+for i, (bg, fg) in enumerate(zip(*[iter(sunset_colors)]*2)):
+    sunset[i] = f'{fg} on {bg}'
+
 
 class StreetViewer:
     def __init__(self):
@@ -89,6 +95,8 @@ class StreetViewer:
         scr.addstr(h-1, 0, f'{self.xoffset:0.0f} +{self.dx:0.1f} {self._status}')
 
         for y in range(0, h):
+            if y < h-16:
+                scr.addstr(y, 0, '▀'*(w-1), colors.get(sunset[h-16-y]))
             x = 0
             while x < w-1:
                 rows = self.layout[x+int(self.xoffset)][y+self.yoffset]
