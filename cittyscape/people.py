@@ -11,7 +11,7 @@ class Person(Thing):
     def __init__(self, box):
         self.box = box
         self.head, self.torso, self.leg = map(choice, (self.heads, self.torsos, self.legs))
-        self.color_head = choice('58 172'.split())
+        self.color_head = choice('114 147 158 189 220'.split())
         # ('58 65 94 100 130 136 142 166 172 178 181 179 214 226 222 230'.split()))
         self.color_torso = choice(self.colors)
         self.color_leg = str(int(self.color_torso)+1)
