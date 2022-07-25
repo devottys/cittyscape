@@ -9,6 +9,7 @@ from wcwidth import wcswidth
 from .buildings import iter_buildings, Thing, Box, Text
 from .people import iter_people
 from .utils import Colors
+from .sunset import sunset_color
 
 keycodes = { getattr(curses, k):k for k in dir(curses) if k.startswith('KEY_') }
 keycodes.update({chr(i): '^'+chr(64+i) for i in range(32)})
@@ -60,12 +61,6 @@ def main(scr, viewer):
             if viewer.handle_key(ch):
                 break
 
-sunset_colors = '17 18 19 20 21 57 93 129 165 201 200 199 198 197 196 202 208 214 220 226'.split()[::-1]
-
-sunset=defaultdict(lambda: '17 on 17')
-for i, (bg, fg) in enumerate(zip(*[iter(sunset_colors)]*2)):
-    sunset[i] = f'{fg} on {bg}'
-
 
 class StreetViewer:
     def __init__(self):
@@ -74,6 +69,7 @@ class StreetViewer:
         self.xoffset = self.dx = 0
         self.yoffset = 0
         self.max_speed = 0
+        self.time = 5*3600+850  # start at sunrise
 
     def load(self, buildings):
         for bldg in sorted(buildings, key=lambda r: r.box.y2):
@@ -86,17 +82,26 @@ class StreetViewer:
     def status(self, s):
         self._status = str(s)
 
+    @property
+    def timestr(self):
+        h = self.time // 3600
+        m = (self.time % 3600) // 60
+        return f'{h:02d}:{m:02d}'
+
     def draw(self, scr):
         scr.erase()
         scr.bkgd(' ', colors.get('on 232'))
 
+        self.time += 1
+
         h, w = scr.getmaxyx()
         self.yoffset = 50-h + 15
-        scr.addstr(h-1, 0, f'{self.xoffset:0.0f} +{self.dx:0.1f} {self._status}')
+        scr.addstr(h-1, 0, f'{self.timestr} {self.xoffset:0.0f} +{self.dx:0.1f} {self._status}')
 
         for y in range(0, h):
             if y < h-16:
-                scr.addstr(y, 0, '▀'*(w-1), colors.get(sunset[h-16-y]))
+                fg, bg, ch = sunset_color(self.time+y*15)
+                scr.addstr(y, 0, ch*(w-1), colors.get(f'{fg} on {bg}'))
             x = 0
             while x < w-1:
                 rows = self.layout[x+int(self.xoffset)][y+self.yoffset]
