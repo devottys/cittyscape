@@ -3,6 +3,18 @@ import random
 import curses
 
 
+keycodes = { getattr(curses, k):k for k in dir(curses) if k.startswith('KEY_') }
+keycodes.update({chr(i): '^'+chr(64+i) for i in range(32)})
+
+
+def getkey(scr):
+    try:
+        ch = scr.get_wch()
+        return keycodes.get(ch, ch)
+    except curses.error:
+        return ''
+
+
 class Colors:
     def __init__(self):
         self.color_pairs = {}  # (fgcolornum, bgcolornum) -> pairnum
@@ -29,3 +41,5 @@ class Colors:
 
     def random(self):
         return random.choice(list(self.colors.keys()))
+
+colors = Colors()
