@@ -7,14 +7,14 @@ from cittyscape import colors, sunset_color
 
 
 class StreetViewer:
-    def __init__(self, mindx=0.015, incrdx=0.1):
+    def __init__(self, mindx=0.015, incrdx=0.15):
         self.layout = defaultdict(lambda: defaultdict(list))
         self._status = ''
         self.xoffset = self.dx = 0
         self.yoffset = 0
         self.max_speed = 0
         self.incrdx = incrdx
-        self.time = 5*3600+850  # start at sunrise
+        self.time = 6*3600+850  # start at sunrise
 
     def load(self, buildings):
         for bldg in sorted(buildings, key=lambda r: r.box.y2):
@@ -34,12 +34,17 @@ class StreetViewer:
         return f'{h:02d}:{m:02d}'
 
     def step(self, dt=1):
-        if self.dx < self.max_speed:
+        if self.max_speed >= 0 and self.dx < self.max_speed:
             self.dx += dt
-        if self.dx > self.max_speed:
+        if self.max_speed >= 0 and self.dx > self.max_speed:
             self.dx -= dt
+        if self.max_speed <= 0 and self.dx > self.max_speed:
+            self.dx -= dt
+        if self.max_speed <= 0 and self.dx < self.max_speed:
+            self.dx += dt
 
-        self.xoffset += self.dx
+        if abs(self.dx) > 0.1:
+            self.xoffset += self.dx
 
     def draw(self, scr):
         scr.erase()
@@ -51,7 +56,7 @@ class StreetViewer:
 
         for y in range(0, h):
             if y < h-16:
-                fg, bg, ch = sunset_color(self.time+y*15)
+                fg, bg, ch = sunset_color(self.time+y*95)
                 scr.addstr(y, 0, ch*(w-1), colors.get(f'{fg} on {bg}'))
             x = 0
             while x < w-1:
@@ -72,7 +77,7 @@ class StreetViewer:
         'Return True to exit.'
         if ch == 'q': return True
         elif ch in ['l', 'KEY_RIGHT']: self.max_speed = min(self.max_speed+self.incrdx, 4)
-        elif ch in ['h', 'KEY_LEFT']: self.max_speed = max(self.max_speed-self.incrdx, 0)
+        elif ch in ['h', 'KEY_LEFT']: self.max_speed = max(self.max_speed-self.incrdx, -4)
         elif ch in ['k', 'KEY_UP']: self.yoffset -= 3
         elif ch in ['j', 'KEY_DOWN']: self.yoffset += 3
         elif ch in ['KEY_NPAGE']: self.xoffset += 128
