@@ -1,0 +1,5 @@
+# Design notes
+
+We don't know where we're going with this, so the key is to make the components individually lovely and compatible in the widest range of settings.
+If it fits in the box, then it'll fit in the setting.
+Then we'll mix and match as we experiment with demos and games.

@@ -1,4 +1,5 @@
 import sys
+import time
 import curses
 
 from cittyscape import StreetViewer, iter_buildings, iter_people, getkey
@@ -14,16 +15,17 @@ def main(scr, viewer):
     curses.meta(1)
     scr.timeout(30)
 
+    last_time = time.time()
     while True:
         try:
-            if viewer.dx < viewer.max_speed:
-                viewer.dx += 1
-            if viewer.dx > viewer.max_speed:
-                viewer.dx -= 1
+            now = time.time()
+            dt = now - last_time
+            last_time = now
 
-            viewer.xoffset += viewer.dx
+            viewer.step(dt)
             viewer.draw(scr)
             ch = getkey(scr)
+
         except Exception as e:
             raise # return str(e)
 

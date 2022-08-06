@@ -3,8 +3,10 @@ from cittyscape import *
 
 
 class Person(Thing):
-    heads='ợ Ợ ộ Ọ ọ Ộ ௐ இ'.split()
-    torsos='Ǐ Ḭ µ Ʒ Ƹ ƿ ǐ ȸ ȹ ḭ ῲ ῳ ῴ ῶ ῷ Ý'.split()
+    heads= list('OÒÓÔÕÖØŌŎŐƟƠǑǾȌȎȪȬȮȰОӦṌṎṐṒỌỎỐỒỔỖỘỚỜỞỠỢⲞꝊꝌ'
+        'oòóôõöøōŏőơǒǫǭǿȍȏȫȭȯȱоӧṍṏṑṓọỏốồổỗộớờởỡợₒⱺⲟꝋꝍꭳ'
+        'eèéêëēĕėęěȅȇȩэӭḕḗḙḛḝẹẻẽếềểễệ⒠') + list('ợ Ợ ộ Ọ ọ Ộ ௐ இ'.split())
+    torsos='Ǐ Ḭ µ Ʒ Ƹ ƿ ǐ ȸ ȹ ḭ ῲ ῳ ῴ ῶ ῷ Ý T Ţ Ť Ŧ Ƭ Ʈ Ț Ⱦ Ṫ Ṭ Ṯ Ṱ M Ḿ Ṁ Ṃ Ɱ O 8 6 | !'.split()
     legs='Ʌ Ώ λ'.split()
     colors=list(map(str, range(1, 232)))
 

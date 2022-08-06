@@ -33,11 +33,17 @@ class StreetViewer:
         m = (self.time % 3600) // 60
         return f'{h:02d}:{m:02d}'
 
+    def step(self, dt=1):
+        if self.dx < self.max_speed:
+            self.dx += dt
+        if self.dx > self.max_speed:
+            self.dx -= dt
+
+        self.xoffset += self.dx
+
     def draw(self, scr):
         scr.erase()
         scr.bkgd(' ', colors.get('on 232'))
-
-        self.time += 1
 
         h, w = scr.getmaxyx()
         self.yoffset = 50-h + 15
