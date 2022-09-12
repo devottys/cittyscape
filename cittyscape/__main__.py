@@ -2,7 +2,7 @@ import sys
 import time
 import curses
 
-from cittyscape import StreetViewer, iter_buildings, iter_people, getkey
+from cittyscape import StreetViewer, CittyBlock, getkey
 
 
 def main(scr, viewer):
@@ -50,6 +50,5 @@ if __name__ == '__main__':
         endblock = int(sys.argv[2], base=16)
 
     viewer = StreetViewer()
-    viewer.load(iter_buildings(startblock, endblock))
-    viewer.load(iter_people())
+    viewer.load([CittyBlock(1000, 50)])
     curses.wrapper(main, viewer)

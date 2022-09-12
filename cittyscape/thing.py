@@ -1,85 +1,51 @@
-from typing import Sequence
-from itertools import product
-from random import choice
+from dataclasses import dataclass
 
-from wcwidth import wcswidth
+from .utils import TextUnit
 
-from .utils import fuzz, Box, Text
+
+
+@dataclass
+class Subthing:
+    x: int=0
+    y: int=0
+    subt: str=''  # |Thing
+    color: str=''  # override subthing colors if specified
+
+    def itertext(self):
+        if isinstance(self.subt, TextUnit):
+            t = self.subt
+            yield TextUnit(t.text, t.x+self.x, t.y+self.y, self.color or t.color)
+        elif isinstance(self.subt, str):
+            yield TextUnit(self.subt, self.x, self.y, self.color)
+        else:
+            for t in self.subt.itertext():
+                yield TextUnit(t.text, t.x+self.x, t.y+self.y, self.color or t.color)
 
 
 class Thing:
-    def __init__(self,
-                 style:Sequence[str],
-                 box:Sequence[Box],
-                 color:Sequence[str]=['']):
-        # choose a random style for the thing, and a constrained random box that it will fit in. also a random color.
+    def __init__(self, w, h, **kwargs):
+        self.w = w
+        self.h = h
+        self.__dict__.update(**kwargs)
 
-        styles = style if isinstance(style, (list, tuple)) else [style]
-        boxes = box if isinstance(box, (list, tuple)) else [box]
-        colors = color if isinstance(color, (list, tuple)) else [color]
+    @property
+    def subthings(self):
+        'List of Subthing(rel_x, rel_y, Thing|Text, color_override) tuples.'
+        return []
 
-        fits = []
-        for style, box in product(styles, boxes):
-            lines = style.splitlines()
-
-            if len(lines) <= box.h and max(map(wcswidth, lines or [''])) <= box.w:
-                fits.append((style, box))
-
-        if fits:
-            self.style, self.box = choice(fits)
-        else:
-            self.style, self.box = '', boxes[0]
-
-        # fuzz text
-        if self.style.isascii():
-            self.style = fuzz(self.style)
-
-        self.lines = self.style.splitlines()
-        self.color = choice(colors)
-
-    def __iter__(self):
-        if not self.lines:
-            return
-        x1 = self.box.x1
-        y1 = self.box.y1
-
-        dy = range(0, self.box.h-len(self.lines))
-        if dy:
-            y1 += choice(dy)
-
-        dx = range(0, self.box.w-wcswidth(self.lines[0]))
-        if dx:
-            x1 += choice(dx)
-
-        for linenum, line in enumerate(self.lines[::-1]):
-            x = x1
-            for ch in line:
-                yield Text(ch, x, y1-linenum, color=self.color)
-                x += wcswidth(ch)
-
-    def sub(self, cls, dx, dy, w, h, color=''):
-        if dx < 0:
-            x = self.box.x2+dx
-        else:
-            x = self.box.x1+dx
-
-        if dy < 0:
-            y = self.box.y2+dy+1
-        else:
-            y = self.box.y1+dy
-        return cls(Box(x, y, w, h), color=color)
+    def itertext(self):
+        'Generate Subthing.'
+        for subt in self.subthings:
+            if isinstance(subt, TextUnit):
+                yield subt
+            else:
+                yield from subt.itertext()
 
 
-    def subthing(self, text, dx, dy, w, h, color=''):
-        if dx < 0:
-            x = self.box.x2+dx
-        else:
-            x = self.box.x1+dx
+class Text(Thing):
+    text: str
+    color: str = ''
 
-        if dy < 0:
-            y = self.box.y2+dy+1
-        else:
-            y = self.box.y1+dy
-        return Thing(text, Box(x,y,w,h), color=color)
-
-
+    @property
+    def subthings(self):
+        return [Subthing(0, 0, self.text, self.color)]

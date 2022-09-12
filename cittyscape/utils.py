@@ -151,22 +151,23 @@ def fuzz(s, n=1):
 
 
 @dataclass
-class Text:
-    text: str
-    x: int
-    y: int
-    color: str
+class TextUnit:
+    text: str=''
+    x: int=0
+    y: int=0
+    color: str=''
+
 
 def hline(abc, x, y, w, color=''):
     a,b,c = abc
-    yield Text(a, x, y, color=color) # ML
+    yield TextUnit(a, x, y, color=color) # ML
     for x1 in range(x+1, x+w-1):
-        yield Text(b, x1, y, color=color)
-    yield Text(c, x+w-1, y, color=color) # MR
+        yield TextUnit(b, x1, y, color=color)
+    yield TextUnit(c, x+w-1, y, color=color) # MR
 
 def vline(ch, x, y, h, color=''):
     for y in range(y, y+h+1):
-        yield Text(ch, x, y, color=color)
+        yield TextUnit(ch, x, y, color=color)
 
 
 class Box:
